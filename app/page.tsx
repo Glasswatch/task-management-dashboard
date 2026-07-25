@@ -22,6 +22,7 @@ export default function Home() {
 
     setTasks(data);
   }
+
   async function addTask(e: React.FormEvent) {
     e.preventDefault();
 
@@ -43,6 +44,7 @@ export default function Home() {
 
     await fetchTasks();
   }
+
   async function updateTaskStatus(id: string, status: TaskStatus) {
     const { error } = await supabase
       .from("tasks")
@@ -61,88 +63,132 @@ export default function Home() {
     fetchTasks();
   }, []);
 
+  const getStatusBadgeStyle = (status: TaskStatus) => {
+    switch (status) {
+      case "done":
+        return "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:border-emerald-500/50";
+      case "in_progress":
+        return "border-blue-500/30 bg-blue-500/10 text-blue-400 hover:border-blue-500/50";
+      default:
+        return "border-amber-500/30 bg-amber-500/10 text-amber-400 hover:border-amber-500/50";
+    }
+  };
+
   return (
-    // Changed page background
-    <main className="min-h-screen bg-slate-900 p-8">
+    <main className="min-h-screen bg-slate-950 px-4 py-12 text-slate-100 sm:px-8">
       <div className="mx-auto max-w-3xl">
-        {/* Changed title color */}
-        <h1 className="mb-6 text-4xl font-bold text-white">Task Dashboard</h1>
+        {/* Page Header */}
+        <header className="mb-8 flex items-center justify-between border-b border-slate-800/80 pb-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Task Dashboard
+            </h1>
+            <p className="mt-1 text-sm text-slate-400">
+              Manage and track your active progress
+            </p>
+          </div>
+          <div className="rounded-full bg-slate-900 px-3.5 py-1 text-xs font-semibold text-slate-400 border border-slate-800">
+            {tasks.length} {tasks.length === 1 ? "task" : "tasks"}
+          </div>
+        </header>
 
         {/* Add Task Form */}
         <form
           onSubmit={addTask}
-          className="mb-8 rounded-lg bg-slate-800 p-6 shadow-md border border-slate-700"
+          className="mb-8 rounded-xl border border-slate-800 bg-slate-900/70 p-6 shadow-xl backdrop-blur-sm transition-all focus-within:border-slate-700"
         >
-          <h2 className="mb-4 text-2xl font-semibold text-slate-100">
-            Add Task
+          <h2 className="mb-4 text-xl font-semibold text-slate-100">
+            Create New Task
           </h2>
 
-          <input
-            type="text"
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="mb-4 w-full rounded border border-slate-700 bg-slate-900 p-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+          <div className="space-y-4">
+            <div>
+              <input
+                type="text"
+                placeholder="Task title..."
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="w-full rounded-lg border border-slate-800 bg-slate-950/80 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              />
+            </div>
 
-          <textarea
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className="mb-4 w-full rounded border border-slate-700 bg-slate-900 p-2 text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
+            <div>
+              <textarea
+                placeholder="Description (optional)"
+                rows={3}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className="w-full rounded-lg border border-slate-800 bg-slate-950/80 px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+              />
+            </div>
 
-          <button
-            type="submit"
-            className="rounded bg-blue-600 px-4 py-2 font-medium text-white transition-colors hover:bg-blue-700"
-          >
-            Add Task
-          </button>
+            <div className="flex justify-end pt-1">
+              <button
+                type="submit"
+                className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-500 active:scale-[0.98] disabled:opacity-50"
+              >
+                Add Task
+              </button>
+            </div>
+          </div>
         </form>
 
+        {/* Task List */}
         {tasks.length === 0 ? (
-          // Added text color for empty state
-          <p className="text-slate-400">No tasks yet.</p>
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-800 bg-slate-900/30 py-12 text-center">
+            <p className="text-base font-medium text-slate-300">
+              No tasks found
+            </p>
+            <p className="mt-1 text-sm text-slate-500">
+              Add your first task above to start tracking your work.
+            </p>
+          </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {tasks.map((task) => (
-              // Changed card background and added a subtle border
               <div
                 key={task.id}
-                className="rounded-lg bg-slate-800 p-4 shadow-md border border-slate-700"
+                className="group flex flex-col justify-between gap-4 rounded-xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-sm transition-all hover:border-slate-700 hover:bg-slate-900/90 sm:flex-row sm:items-start"
               >
-                {/* Changed task title color */}
-                <h2 className="text-xl font-semibold text-slate-100">
-                  {task.title}
-                </h2>
+                <div className="min-w-0 flex-1">
+                  <h3 className="text-lg font-semibold text-slate-100 group-hover:text-white">
+                    {task.title}
+                  </h3>
+                  <p className="mt-1 text-sm leading-relaxed text-slate-400">
+                    {task.description || "No description provided."}
+                  </p>
+                </div>
 
-                {/* Changed description color */}
-                <p className="mt-1 text-slate-400">
-                  {task.description || "No Description"}
-                </p>
-
-                {/* Updated badge background and text color */}
-                {/* Updated status dropdown to match dark theme */}
-                <select
-                  value={task.status}
-                  onChange={(e) =>
-                    updateTaskStatus(task.id, e.target.value as TaskStatus)
-                  }
-                  className="mt-3 cursor-pointer rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-sm font-medium text-slate-200 outline-none transition-colors hover:border-slate-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-                >
-                  <option value="todo" className="bg-slate-900 text-slate-200">
-                    Todo
-                  </option>
-                  <option
-                    value="in_progress"
-                    className="bg-slate-900 text-slate-200"
+                <div className="shrink-0">
+                  <select
+                    value={task.status}
+                    onChange={(e) =>
+                      updateTaskStatus(task.id, e.target.value as TaskStatus)
+                    }
+                    className={`cursor-pointer rounded-lg border px-3 py-1.5 text-xs font-semibold outline-none transition-all ${getStatusBadgeStyle(
+                      task.status,
+                    )}`}
                   >
-                    In Progress
-                  </option>
-                  <option value="done" className="bg-slate-900 text-slate-200">
-                    Done
-                  </option>
-                </select>
+                    <option
+                      value="todo"
+                      className="bg-slate-900 text-slate-200"
+                    >
+                      Todo
+                    </option>
+                    <option
+                      value="in_progress"
+                      className="bg-slate-900 text-slate-200"
+                    >
+                      In Progress
+                    </option>
+                    <option
+                      value="done"
+                      className="bg-slate-900 text-slate-200"
+                    >
+                      Done
+                    </option>
+                  </select>
+                </div>
               </div>
             ))}
           </div>
