@@ -53,7 +53,7 @@ Open http://localhost:3000 in your browser.
 
 **Vercel Deployment**
 
-https://your-vercel-url.vercel.app
+https://task-management-dashboard-weld.vercel.app/
 
 ## Database
 
