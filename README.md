@@ -76,3 +76,5 @@ Supabase was chosen as the backend because it provides a PostgreSQL database alo
 ## AI Usage
 
 AI was used as a learning and development assistant throughout this project. It helped explain unfamiliar concepts, review code, and suggest implementation approaches. All generated code was reviewed, tested, and understood before being included in the final submission.
+
+git push test
